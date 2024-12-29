@@ -85,3 +85,14 @@ def get_gosudarstvo_by_id(gosudarstvo_id: int, db: Session = Depends(get_db)):
     if not gosudarstvo:
         raise HTTPException(status_code=404, detail="Gosudarstvo not found")
     return gosudarstvo
+
+@app.put("/gosudarstvo/{gosudarstvo_id}", response_model=Gosudarstvo)
+def update_gosudarstvo(gosudarstvo_id: int, updated_data: GosudarstvoCreate, db: Session = Depends(get_db)):
+    gosudarstvo = db.query(Gosudarstvo).filter(Gosudarstvo.id == gosudarstvo_id).first()
+    if not gosudarstvo:
+        raise HTTPException(status_code=404, detail="Gosudarstvo not found")
+    for key, value in updated_data.dict().items():
+        setattr(gosudarstvo, key, value)
+    db.commit()
+    db.refresh(gosudarstvo)
+    return gosudarstvo
