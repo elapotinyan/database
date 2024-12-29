@@ -104,3 +104,22 @@ def delete_gosudarstvo(gosudarstvo_id: int, db: Session = Depends(get_db)):
     db.delete(gosudarstvo)
     db.commit()
     return {"detail": f"Gosudarstvo with id {gosudarstvo_id} has been deleted"}
+
+
+@app.delete("/natsionalnost/{natsionalnost_id}", response_model=dict)
+def delete_natsionalnost(natsionalnost_id: int, db: Session = Depends(get_db)):
+    natsionalnost = db.query(Natsionalnost).filter(Natsionalnost.id == natsionalnost_id).first()
+    if not natsionalnost:
+        raise HTTPException(status_code=404, detail="Natsionalnost not found")
+    db.delete(natsionalnost)
+    db.commit()
+    return {"detail": f"Natsionalnost with id {natsionalnost_id} has been deleted"}
+
+@app.delete("/naselenie/{naselenie_id}", response_model=dict)
+def delete_naselenie(naselenie_id: int, db: Session = Depends(get_db)):
+    naselenie = db.query(Naselenie).filter(Naselenie.id == naselenie_id).first()
+    if not naselenie:
+        raise HTTPException(status_code=404, detail="Naselenie not found")
+    db.delete(naselenie)
+    db.commit()
+    return {"detail": f"Naselenie with id {naselenie_id} has been deleted"}
