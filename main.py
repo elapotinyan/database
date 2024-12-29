@@ -36,7 +36,6 @@ def create_natsionalnost(natsionalnost: NatsionalnostCreate, db: Session = Depen
 
 @app.post("/naselenie/", response_model=Naselenie)
 def create_naselenie(naselenie: NaselenieCreate, db: Session = Depends(get_db)):
-    # Проверка на существование связей
     if not db.query(Gosudarstvo).filter(Gosudarstvo.id == naselenie.gosudarstvo_id).first():
         raise HTTPException(status_code=404, detail="Gosudarstvo not found")
     if not db.query(Natsionalnost).filter(Natsionalnost.id == naselenie.natsionalnost_id).first():
@@ -96,3 +95,12 @@ def update_gosudarstvo(gosudarstvo_id: int, updated_data: GosudarstvoCreate, db:
     db.commit()
     db.refresh(gosudarstvo)
     return gosudarstvo
+
+@app.delete("/gosudarstvo/{gosudarstvo_id}", response_model=dict)
+def delete_gosudarstvo(gosudarstvo_id: int, db: Session = Depends(get_db)):
+    gosudarstvo = db.query(Gosudarstvo).filter(Gosudarstvo.id == gosudarstvo_id).first()
+    if not gosudarstvo:
+        raise HTTPException(status_code=404, detail="Gosudarstvo not found")
+    db.delete(gosudarstvo)
+    db.commit()
+    return {"detail": f"Gosudarstvo with id {gosudarstvo_id} has been deleted"}
