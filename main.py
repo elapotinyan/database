@@ -61,3 +61,16 @@ def get_natsionalnost_by_id(natsionalnost_id: int, db: Session = Depends(get_db)
     if not natsionalnost:
         raise HTTPException(status_code=404, detail="Natsionalnost not found")
     return natsionalnost
+
+@app.get("/naselenie/", response_model=list[Naselenie])
+def get_all_naselenie(db: Session = Depends(get_db)):
+    
+    return db.query(Naselenie).all()
+
+@app.get("/naselenie/{naselenie_id}", response_model=Naselenie)
+def get_naselenie_by_id(naselenie_id: int, db: Session = Depends(get_db)):
+   
+    naselenie = db.query(Naselenie).filter(Naselenie.id == naselenie_id).first()
+    if not naselenie:
+        raise HTTPException(status_code=404, detail="Naselenie not found")
+    return naselenie
