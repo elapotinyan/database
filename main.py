@@ -48,3 +48,16 @@ def create_naselenie(naselenie: NaselenieCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_naselenie)
     return db_naselenie
+
+@app.get("/natsionalnost/", response_model=list[Natsionalnost])
+def get_all_natsionalnost(db: Session = Depends(get_db)):
+   
+    return db.query(Natsionalnost).all()
+
+@app.get("/natsionalnost/{natsionalnost_id}", response_model=Natsionalnost)
+def get_natsionalnost_by_id(natsionalnost_id: int, db: Session = Depends(get_db)):
+    
+    natsionalnost = db.query(Natsionalnost).filter(Natsionalnost.id == natsionalnost_id).first()
+    if not natsionalnost:
+        raise HTTPException(status_code=404, detail="Natsionalnost not found")
+    return natsionalnost
