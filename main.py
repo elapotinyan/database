@@ -74,3 +74,14 @@ def get_naselenie_by_id(naselenie_id: int, db: Session = Depends(get_db)):
     if not naselenie:
         raise HTTPException(status_code=404, detail="Naselenie not found")
     return naselenie
+
+@app.get("/gosudarstvo/", response_model=list[Gosudarstvo])
+def get_all_gosudarstva(db: Session = Depends(get_db)):
+    return db.query(Gosudarstvo).all()
+
+@app.get("/gosudarstvo/{gosudarstvo_id}", response_model=Gosudarstvo)
+def get_gosudarstvo_by_id(gosudarstvo_id: int, db: Session = Depends(get_db)):
+    gosudarstvo = db.query(Gosudarstvo).filter(Gosudarstvo.id == gosudarstvo_id).first()
+    if not gosudarstvo:
+        raise HTTPException(status_code=404, detail="Gosudarstvo not found")
+    return gosudarstvo
