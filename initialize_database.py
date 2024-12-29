@@ -5,8 +5,8 @@ from psycopg2 import sql
 db_host = 'localhost'
 db_port = '5432'
 db_user = 'postgres' 
-db_password = 'admin' 
-new_db_name = 'geography_db'  
+db_password = '1111' 
+new_db_name = 'geography1_db'  
 owner = 'postgres'  
 conn = psycopg2.connect(
     dbname='postgres',

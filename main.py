@@ -4,6 +4,7 @@ from database import SessionLocal
 from models import Gosudarstvo, Natsionalnost, Naselenie
 from schemas import GosudarstvoCreate, Gosudarstvo, NatsionalnostCreate, Natsionalnost, NaselenieCreate, Naselenie
 
+
 app = FastAPI()
 
 def get_db():
@@ -25,7 +26,6 @@ def create_gosudarstvo(gosudarstvo: GosudarstvoCreate, db: Session = Depends(get
 
 @app.post("/natsionalnost/", response_model=Natsionalnost)
 def create_natsionalnost(natsionalnost: NatsionalnostCreate, db: Session = Depends(get_db)):
-    # Проверка на уникальность имени
     if db.query(Natsionalnost).filter(Natsionalnost.name == natsionalnost.name).first():
         raise HTTPException(status_code=400, detail="Natsionalnost already exists")
     db_natsionalnost = Natsionalnost(**natsionalnost.dict())
