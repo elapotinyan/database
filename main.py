@@ -123,3 +123,25 @@ def delete_naselenie(naselenie_id: int, db: Session = Depends(get_db)):
     db.delete(naselenie)
     db.commit()
     return {"detail": f"Naselenie with id {naselenie_id} has been deleted"}
+
+@app.put("/natsionalnost/{natsionalnost_id}", response_model=Natsionalnost)
+def update_natsionalnost(natsionalnost_id: int, updated_data: NatsionalnostCreate, db: Session = Depends(get_db)):
+    natsionalnost = db.query(Natsionalnost).filter(Natsionalnost.id == natsionalnost_id).first()
+    if not natsionalnost:
+        raise HTTPException(status_code=404, detail="Natsionalnost not found")
+    for key, value in updated_data.dict().items():
+        setattr(natsionalnost, key, value)
+    db.commit()
+    db.refresh(natsionalnost)
+    return natsionalnost
+
+@app.put("/naselenie/{naselenie_id}", response_model=Naselenie)
+def update_naselenie(naselenie_id: int, updated_data: NaselenieCreate, db: Session = Depends(get_db)):
+    naselenie = db.query(Naselenie).filter(Naselenie.id == naselenie_id).first()
+    if not naselenie:
+        raise HTTPException(status_code=404, detail="Naselenie not found")
+    for key, value in updated_data.dict().items():
+        setattr(naselenie, key, value)
+    db.commit()
+    db.refresh(naselenie)
+    return naselenie
