@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-# Схемы для Государства
+
 class StateBase(BaseModel):
     name: str
     capital: str
@@ -15,7 +15,7 @@ class StateSchema(StateBase):
     class Config:
         orm_mode = True
 
-# Схемы для Национальности
+
 class NationalityBase(BaseModel):
     name: str
     language: str
@@ -30,7 +30,7 @@ class NationalitySchema(NationalityBase):
     class Config:
         orm_mode = True
 
-# Схемы для Населения
+
 class PopulationBase(BaseModel):
     state_id: int
     nationality_id: int

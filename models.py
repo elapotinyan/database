@@ -42,5 +42,5 @@ class Population(Base):
 
 Base.metadata.create_all(bind=engine)
 
-# Сессия
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
