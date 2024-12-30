@@ -21,3 +21,17 @@ def create_state():
         return None
 
 
+def create_nationality():
+    nationality_data = {
+        "name": fake.country(),
+        "language": fake.language_name(),
+        "total_population": random.randint(50000, 100000000)
+    }
+    response = requests.post(f"{BASE_URL}/nationalities/", json=nationality_data)
+    if response.status_code == 200:
+        print(f"Национальность создана: {nationality_data['name']}")
+        return response.json()
+    else:
+        print(f"Не удалось создать национальность: {nationality_data['name']}")
+        return None
+    
