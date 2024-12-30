@@ -1,44 +1,48 @@
 from pydantic import BaseModel
-from typing import Optional
 
-class GosudarstvoBase(BaseModel):
+# Схемы для Государства
+class StateBase(BaseModel):
     name: str
-    capital: Optional[str] = None
-    governance: Optional[str] = None
+    capital: str
+    government_type: str
 
-class GosudarstvoCreate(GosudarstvoBase):
+class StateCreate(StateBase):
     pass
 
-class Gosudarstvo(GosudarstvoBase):
+class StateSchema(StateBase):
     id: int
+
     class Config:
         orm_mode = True
 
-class NatsionalnostBase(BaseModel):
+# Схемы для Национальности
+class NationalityBase(BaseModel):
     name: str
-    language: Optional[str] = None
-    total_population: Optional[int] = None
+    language: str
+    total_population: int
 
-class NatsionalnostCreate(NatsionalnostBase):
+class NationalityCreate(NationalityBase):
     pass
 
-class Natsionalnost(NatsionalnostBase):
+class NationalitySchema(NationalityBase):
     id: int
+
     class Config:
         orm_mode = True
 
-class NaselenieBase(BaseModel):
-    male: Optional[int] = None
-    female: Optional[int] = None
-    total: Optional[int] = None
+# Схемы для Населения
+class PopulationBase(BaseModel):
+    state_id: int
+    nationality_id: int
+    male_population: int
+    female_population: int
+    total_population: int
 
-class NaselenieCreate(NaselenieBase):
-    gosudarstvo_id: int
-    natsionalnost_id: int
+class PopulationCreate(PopulationBase):
+    pass
 
-class Naselenie(NaselenieBase):
+class PopulationSchema(PopulationBase):
     id: int
-    gosudarstvo_id: int
-    natsionalnost_id: int
+
     class Config:
         orm_mode = True

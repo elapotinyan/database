@@ -1,31 +1,46 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, sessionmaker
 
+DATABASE_URL = "postgresql+psycopg2://postgres:1111@localhost:5432/geograph_db"
+
+engine = create_engine(DATABASE_URL)
 Base = declarative_base()
 
-class Gosudarstvo(Base):
-    __tablename__ = 'gosudarstvo'
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    capital = Column(String, nullable=True)
-    governance = Column(String, nullable=True)
-    population = relationship("Naselenie", back_populates="gosudarstvo")
+class State(Base):
+    __tablename__ = 'states'
 
-class Natsionalnost(Base):
-    __tablename__ = 'natsionalnost'
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    language = Column(String, nullable=True)
-    total_population = Column(Integer, nullable=True)
-    population = relationship("Naselenie", back_populates="natsionalnost")
+    id = Column(Integer, primary_key=True)
+    name = Column(String, index=True)
+    capital = Column(String)
+    government_type = Column(String)
 
-class Naselenie(Base):
-    __tablename__ = 'naselenie'
-    id = Column(Integer, primary_key=True, index=True)
-    gosudarstvo_id = Column(Integer, ForeignKey("gosudarstvo.id"), nullable=False)
-    natsionalnost_id = Column(Integer, ForeignKey("natsionalnost.id"), nullable=False)
-    male = Column(Integer, nullable=True)
-    female = Column(Integer, nullable=True)
-    total = Column(Integer, nullable=True)
-    gosudarstvo = relationship("Gosudarstvo", back_populates="population")
-    natsionalnost = relationship("Natsionalnost", back_populates="population")
+    populations = relationship("Population", back_populates="state")
+
+class Nationality(Base):
+    __tablename__ = 'nationalities'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, index=True)
+    language = Column(String)
+    total_population = Column(Integer)
+
+    populations = relationship("Population", back_populates="nationality")
+
+class Population(Base):
+    __tablename__ = 'populations'
+
+    id = Column(Integer, primary_key=True)
+    state_id = Column(Integer, ForeignKey('states.id'))
+    nationality_id = Column(Integer, ForeignKey('nationalities.id'))
+    male_population = Column(Integer)
+    female_population = Column(Integer)
+    total_population = Column(Integer)
+
+    state = relationship("State", back_populates="populations")
+    nationality = relationship("Nationality", back_populates="populations")
+
+Base.metadata.create_all(bind=engine)
+
+# Сессия
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
