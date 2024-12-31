@@ -191,3 +191,24 @@ def get_states_by_population(
         )
     
     return states
+
+
+@app.get("/states/select/", response_model=list[StateSchema])
+def search_states_by_capital_and_government(
+    capital: str, 
+    government_type: str, 
+    db: Session = Depends(get_db)
+):
+    
+    states = db.query(State).filter(
+        State.capital == capital,
+        State.government_type == government_type
+    ).all()
+
+    if not states:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No states found with capital '{capital}' and government type '{government_type}'"
+        )
+
+    return states
