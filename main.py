@@ -212,3 +212,26 @@ def search_states_by_capital_and_government(
         )
 
     return states
+
+@app.put("/nationalities/update/", response_model=list[NationalitySchema])
+def update_nationalities_by_language(
+    language: str, 
+    new_total_population: int, 
+    db: Session = Depends(get_db)
+):
+    nationalities = db.query(Nationality).filter(
+        Nationality.language == language
+    ).all()
+
+    if not nationalities:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No nationalities found with language '{language}'"
+        )
+
+    for nationality in nationalities:
+        nationality.total_population = new_total_population
+        db.commit()
+        db.refresh(nationality)
+
+    return nationalities
