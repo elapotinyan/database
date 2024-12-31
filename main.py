@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from models import SessionLocal, State, Nationality, Population
 from schemas import StateCreate, StateSchema, NationalityCreate, NationalitySchema, PopulationCreate, PopulationSchema
-
+from typing import Optional
 app = FastAPI()
 
 def get_db():
@@ -172,3 +172,22 @@ def delete_population(population_id: int, db: Session = Depends(get_db)):
     db.delete(db_population)
     db.commit()
     return db_population
+
+
+@app.get("/states/join/", response_model=list[StateSchema])
+def get_states_by_population(
+    population_threshold: int, 
+    db: Session = Depends(get_db)
+):
+
+    states = db.query(State).join(Population).filter(
+        Population.total_population > population_threshold
+    ).all()
+    
+    if not states:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No states found with population over {population_threshold}"
+        )
+    
+    return states
