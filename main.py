@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from models import SessionLocal, State, Nationality, Population
 from schemas import StateCreate, StateSchema, NationalityCreate, NationalitySchema, PopulationCreate, PopulationSchema
 from typing import Optional
+from sqlalchemy import func
 app = FastAPI()
 
 def get_db():
@@ -235,3 +236,38 @@ def update_nationalities_by_language(
         db.refresh(nationality)
 
     return nationalities
+
+
+@app.get("/populations/group_by/")
+def group_populations_by_state(
+    state_id: Optional[int] = None,
+    db: Session = Depends(get_db)
+):
+    
+    query = db.query(
+        Population.state_id,
+        func.sum(Population.male_population).label("total_male_population"),
+        func.sum(Population.female_population).label("total_female_population"),
+        func.sum(Population.total_population).label("total_population"),
+        (func.sum(Population.male_population) * 100.0 / func.sum(Population.total_population)).label("male_percentage")
+    )
+    
+    if state_id:
+        query = query.filter(Population.state_id == state_id)
+    
+    query = query.group_by(Population.state_id)
+    results = query.all()
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No population data found for grouping by state.")
+    
+    return [
+        {
+            "state_id": result.state_id,
+            "total_male_population": result.total_male_population,
+            "total_female_population": result.total_female_population,
+            "total_population": result.total_population,
+            "male_percentage": round(result.male_percentage, 2)
+        }
+        for result in results
+    ]
